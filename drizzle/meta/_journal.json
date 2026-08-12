@@ -15,6 +15,13 @@
       "when": 1786507625202,
       "tag": "0001_bent_leper_queen",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1786513294085,
+      "tag": "0002_talented_gateway",
+      "breakpoints": true
     }
   ]
 }

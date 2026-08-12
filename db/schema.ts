@@ -7,6 +7,12 @@ export const families = sqliteTable("families", {
   createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
 });
 
+export const tripSettings = sqliteTable("trip_settings", {
+  id: integer("id").primaryKey(),
+  title: text("title").notNull(),
+  updatedAt: text("updated_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+});
+
 export const expenses = sqliteTable(
   "expenses",
   {

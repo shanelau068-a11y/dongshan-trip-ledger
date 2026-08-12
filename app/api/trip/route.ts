@@ -1,10 +1,16 @@
 import { desc, eq, sql } from "drizzle-orm";
 import { getD1, getDb } from "../../../db";
-import { expenses, families } from "../../../db/schema";
+import { expenses, families, tripSettings } from "../../../db/schema";
 
 async function ensureSchema() {
   const d1 = getD1();
   await d1.batch([
+    d1.prepare(`CREATE TABLE IF NOT EXISTS trip_settings (
+      id INTEGER PRIMARY KEY CHECK (id = 1),
+      title TEXT NOT NULL DEFAULT '东山岛之旅短情长',
+      updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+    )`),
+    d1.prepare("INSERT OR IGNORE INTO trip_settings (id, title) VALUES (1, '东山岛之旅短情长')"),
     d1.prepare(`CREATE TABLE IF NOT EXISTS families (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT NOT NULL UNIQUE,
@@ -37,7 +43,8 @@ export async function GET() {
   try {
     await ensureSchema();
     const db = getDb();
-    const [familyRows, expenseRows] = await Promise.all([
+    const [settingRows, familyRows, expenseRows] = await Promise.all([
+      db.select().from(tripSettings).where(eq(tripSettings.id, 1)).limit(1),
       db.select().from(families).orderBy(families.id),
       db
         .select({
@@ -55,7 +62,7 @@ export async function GET() {
         .innerJoin(families, eq(expenses.familyId, families.id))
         .orderBy(desc(expenses.expenseDate), desc(expenses.id)),
     ]);
-    return Response.json({ families: familyRows, expenses: expenseRows });
+    return Response.json({ tripTitle: settingRows[0]?.title || "东山岛之旅短情长", families: familyRows, expenses: expenseRows });
   } catch (error) {
     return Response.json({ error: errorMessage(error) }, { status: 500 });
   }
@@ -67,6 +74,15 @@ export async function POST(request: Request) {
     const payload = (await request.json()) as Record<string, unknown>;
     const action = String(payload.action || "");
     const db = getDb();
+
+    if (action === "update_title") {
+      const title = String(payload.title || "").trim();
+      if (!title || title.length > 24) {
+        return Response.json({ error: "旅行名称需要填写，且不超过24个字" }, { status: 400 });
+      }
+      await db.update(tripSettings).set({ title, updatedAt: new Date().toISOString() }).where(eq(tripSettings.id, 1));
+      return Response.json({ title });
+    }
 
     if (action === "add_family") {
       const name = String(payload.name || "").trim();

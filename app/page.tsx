@@ -21,6 +21,7 @@ type Expense = {
 };
 
 type TripData = {
+  tripTitle: string;
   families: Family[];
   expenses: Expense[];
 };
@@ -90,7 +91,7 @@ function buildSettlements(
 }
 
 export default function Home() {
-  const [data, setData] = useState<TripData>({ families: [], expenses: [] });
+  const [data, setData] = useState<TripData>({ tripTitle: "东山岛之旅短情长", families: [], expenses: [] });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState("");
@@ -103,13 +104,15 @@ export default function Home() {
   const [payerId, setPayerId] = useState("");
   const [expenseDate, setExpenseDate] = useState(today());
   const [note, setNote] = useState("");
+  const [editingTitle, setEditingTitle] = useState(false);
+  const [titleDraft, setTitleDraft] = useState("");
 
   const loadData = useCallback(async () => {
     try {
       const response = await fetch("/api/trip", { cache: "no-store" });
       const payload = (await response.json()) as TripData & { error?: string };
       if (!response.ok) throw new Error(payload.error || "读取数据失败");
-      setData({ families: payload.families, expenses: payload.expenses });
+      setData({ tripTitle: payload.tripTitle || "东山岛之旅短情长", families: payload.families, expenses: payload.expenses });
       setMessage("");
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "读取数据失败，请稍后重试");
@@ -187,6 +190,16 @@ export default function Home() {
     }
   }
 
+  async function saveTitle(event: FormEvent) {
+    event.preventDefault();
+    const nextTitle = titleDraft.trim();
+    if (!nextTitle) return;
+    if (await mutate({ action: "update_title", title: nextTitle })) {
+      setEditingTitle(false);
+      setTitleDraft("");
+    }
+  }
+
   async function addExpense(event: FormEvent) {
     event.preventDefault();
     const amountNumber = Number(amount);
@@ -235,7 +248,18 @@ export default function Home() {
         </div>
         <div className="hero-copy">
           <p className="eyebrow">一程山海，一路同行</p>
-          <h1>东山岛之旅<br />短情长</h1>
+          {editingTitle ? (
+            <form className="title-editor" onSubmit={saveTitle}>
+              <input value={titleDraft} onChange={(event) => setTitleDraft(event.target.value)} maxLength={24} aria-label="旅行名称" />
+              <button type="submit" disabled={saving}>保存</button>
+              <button type="button" onClick={() => setEditingTitle(false)}>取消</button>
+            </form>
+          ) : (
+            <div className="title-line">
+              <h1>{data.tripTitle}</h1>
+              <button className="title-edit-button" onClick={() => { setTitleDraft(data.tripTitle); setEditingTitle(true); }} aria-label="修改旅行名称">✎</button>
+            </div>
+          )}
           <p className="hero-note">每一笔热闹都记得，回程时轻松算清。</p>
         </div>
         <div className="wave" aria-hidden="true" />

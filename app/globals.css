@@ -110,7 +110,13 @@ button { -webkit-tap-highlight-color: transparent; }
 
 .hero-copy { position: relative; z-index: 2; margin-top: 48px; }
 .eyebrow { margin: 0 0 10px; color: #d9f0e9; font-size: 13px; letter-spacing: .28em; }
-.hero h1 { margin: 0; font-family: Georgia, "Songti SC", "SimSun", serif; font-size: clamp(42px, 12vw, 60px); font-weight: 500; line-height: 1.1; letter-spacing: .05em; }
+.title-line { display: flex; align-items: center; gap: 10px; max-width: 100%; }
+.hero h1 { overflow: hidden; margin: 0; font-family: Georgia, "Songti SC", "SimSun", serif; font-size: clamp(26px, 7.5vw, 38px); font-weight: 500; line-height: 1.2; letter-spacing: .08em; text-overflow: ellipsis; white-space: nowrap; }
+.title-edit-button { flex: 0 0 auto; width: 30px; height: 30px; border: 1px solid rgba(255,255,255,.35); border-radius: 50%; color: white; background: rgba(255,255,255,.1); cursor: pointer; }
+.title-editor { display: flex; align-items: center; gap: 6px; }
+.title-editor input { min-width: 0; height: 42px; border: 1px solid rgba(255,255,255,.45); border-radius: 10px; padding: 0 10px; color: white; background: rgba(0,0,0,.15); font-family: Georgia, "Songti SC", serif; font-size: 23px; }
+.title-editor button { height: 34px; border: 0; border-radius: 8px; padding: 0 9px; color: var(--teal-deep); background: #fff4d7; font-size: 12px; cursor: pointer; }
+.title-editor button:last-child { color: white; background: rgba(255,255,255,.16); }
 .hero-note { margin: 17px 0 0; color: rgba(255,255,255,.74); font-size: 13px; letter-spacing: .08em; }
 
 .wave {
