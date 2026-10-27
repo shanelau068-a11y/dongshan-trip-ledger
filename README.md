@@ -1,5 +1,10 @@
 # 东山岛之旅短情长
 
+<!-- AI-HANDOFF-ENTRY -->
+**AI接手与运行：**[从这里开始](AI_START_HERE.md) · [安装/启动/数据说明](docs/AI_HANDOFF.md) · [实际验证结果](docs/VERIFICATION.md)。
+<!-- /AI-HANDOFF-ENTRY -->
+
+
 一个给多个家庭共同使用的旅行 AA 记账网页，手机端优先设计。
 
 在线使用：[东山岛之旅短情长](https://shanelau068-a11y.github.io/dongshan-trip-ledger/)
